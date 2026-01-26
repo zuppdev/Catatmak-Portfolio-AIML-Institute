@@ -38,7 +38,8 @@ app.add_middleware(
 class ExpenseResponse(BaseModel):
     category: str
     category_confidence: float
-    amount: float
+    amount: int  # Always full amount in IDR (e.g., 20000 not 20)
+    amount_formatted: str  # Human readable (e.g., "Rp 20.000")
     currency: str = "IDR"
     date: str
     description: Optional[str] = None
@@ -55,6 +56,11 @@ class HealthResponse(BaseModel):
     status: str
     models_loaded: dict
     timestamp: str
+
+
+def format_idr(amount: float) -> str:
+    """Format amount as Indonesian Rupiah with thousand separators"""
+    return f"Rp {int(amount):,}".replace(",", ".")
 
 
 # Global model instances
@@ -142,16 +148,18 @@ async def extract_from_text(request: TextExpenseRequest):
     """
     try:
         result = text_extractor.predict(request.text)
-        
+        amount = int(result["amount"])
+
         return ExpenseResponse(
             category=result["category"],
             category_confidence=result["category_confidence"],
-            amount=result["amount"],
+            amount=amount,
+            amount_formatted=format_idr(amount),
             date=datetime.now().strftime("%Y-%m-%d"),
             description=result["processed_text"],
             merchant=result["entities"].get("merchant", "")
         )
-    
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -177,16 +185,18 @@ async def extract_from_image(file: UploadFile = File(...)):
         
         # Parse receipt
         result = receipt_parser.predict(image)
-        
+        amount = int(result["amount"])
+
         return ExpenseResponse(
             category=result["category"],
             category_confidence=result["category_confidence"],
-            amount=result["amount"],
+            amount=amount,
+            amount_formatted=format_idr(amount),
             date=result.get("date", datetime.now().strftime("%Y-%m-%d")),
             merchant=result.get("merchant", ""),
             description=result.get("ocr_text", "")[:200]
         )
-    
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -217,20 +227,22 @@ async def extract_from_audio(file: UploadFile = File(...)):
             # Transcribe and extract
             transcription = audio_transcriber.transcribe(tmp_path)
             text_result = text_extractor.predict(transcription["text"])
-            
+            amount = int(text_result["amount"])
+
             return ExpenseResponse(
                 category=text_result["category"],
                 category_confidence=text_result["category_confidence"],
-                amount=text_result["amount"],
+                amount=amount,
+                amount_formatted=format_idr(amount),
                 date=datetime.now().strftime("%Y-%m-%d"),
                 description=transcription["text"],
                 merchant=text_result["entities"].get("merchant", "")
             )
-        
+
         finally:
             # Clean up temp file
             os.unlink(tmp_path)
-    
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -289,17 +301,19 @@ async def extract_multimodal(
                     )
             
             description = " | ".join(filter(None, description_parts)) or text
-            
+            amount = int(result["amount"])
+
             return ExpenseResponse(
                 category=result["category"],
                 category_confidence=result["category_confidence"],
-                amount=result["amount"],
+                amount=amount,
+                amount_formatted=format_idr(amount),
                 date=datetime.now().strftime("%Y-%m-%d"),
                 description=description[:200] if description else None,
                 modality_weights=result.get("modality_weights"),
                 fusion_used=result.get("fusion_used", False)
             )
-        
+
         finally:
             # Clean up audio temp file
             if audio_data and os.path.exists(audio_data):

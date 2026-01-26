@@ -120,10 +120,13 @@ FUSION_WEIGHTS = {
 # Currency settings
 CURRENCY = "IDR"
 AMOUNT_PATTERNS = [
-    r"(?:Rp\.?\s*)?(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)",
-    r"(\d+)\s*(?:ribu|rb)",
-    r"(\d+)\s*(?:juta|jt)",
-    r"IDR\s*(\d+)"
+    r"Rp\.?\s*(\d{1,3}(?:[.,]\d{3})+)",           # Rp 20.000 or Rp20.000
+    r"(\d{1,3}(?:[.,]\d{3})+)",                    # 20.000 (with separators)
+    r"(\d+)\s*(?:ribu|rb)",                        # 20 ribu, 20rb
+    r"(\d+)\s*(?:juta|jt)",                        # 2 juta, 2jt
+    r"IDR\s*(\d+)",                                # IDR 20000
+    r"Rp\.?\s*(\d+)",                              # Rp 20000 (no separators)
+    r"\b(\d{4,})\b",                               # Plain number 4+ digits (20000)
 ]
 
 # Minimum sensible amount in IDR - amounts below this are likely

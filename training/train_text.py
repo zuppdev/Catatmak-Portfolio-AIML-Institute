@@ -59,51 +59,284 @@ class ExpenseTextDataset(Dataset):
         }
 
 
-def create_synthetic_data(num_samples: int = 1000) -> List[Dict]:
-    """Create synthetic training data for demonstration"""
-    
-    templates = [
-        ("beli {item} {amount}", "belanja"),
-        ("makan {item} {amount}", "makanan"),
-        ("bayar {item} {amount}", "tagihan"),
-        ("bensin {amount}", "transportasi"),
-        ("parkir {amount}", "transportasi"),
-        ("nonton {item} {amount}", "hiburan"),
-        ("beli obat {amount}", "kesehatan"),
-        ("bayar kursus {amount}", "pendidikan"),
-    ]
-    
-    items = {
-        "belanja": ["baju", "sepatu", "tas", "celana", "jaket"],
-        "makanan": ["bakso", "nasi goreng", "mie ayam", "sate", "gado-gado"],
-        "hiburan": ["film", "konser", "game"],
+def create_synthetic_data(num_samples: int = 5000) -> List[Dict]:
+    """Create synthetic training data with diverse Indonesian patterns"""
+
+    # Expanded templates with informal Indonesian
+    templates = {
+        "makanan": [
+            "makan {item} {amount}",
+            "beli {item} {amount}",
+            "jajan {item} {amount}",
+            "{item} {amount}",
+            "sarapan {item} {amount}",
+            "makan siang {item} {amount}",
+            "makan malam {item} {amount}",
+            "lunch {item} {amount}",
+            "dinner {item} {amount}",
+            "breakfast {item} {amount}",
+            "beli makan {item} {amount}",
+            "pesan {item} {amount}",
+            "order {item} {amount}",
+            "gofood {item} {amount}",
+            "grabfood {item} {amount}",
+            "makan di {place} {amount}",
+            "makan {item} di {place} {amount}",
+            "{item} di {place} {amount}",
+            "ngopi {amount}",
+            "ngopi di {place} {amount}",
+            "beli kopi {amount}",
+            "kopi {amount}",
+            "minum {item} {amount}",
+        ],
+        "transportasi": [
+            "bensin {amount}",
+            "isi bensin {amount}",
+            "beli bensin {amount}",
+            "pertamax {amount}",
+            "pertalite {amount}",
+            "solar {amount}",
+            "parkir {amount}",
+            "bayar parkir {amount}",
+            "parkir motor {amount}",
+            "parkir mobil {amount}",
+            "grab {amount}",
+            "gojek {amount}",
+            "ojol {amount}",
+            "ojek online {amount}",
+            "taxi {amount}",
+            "taksi {amount}",
+            "uber {amount}",
+            "maxim {amount}",
+            "naik {vehicle} {amount}",
+            "ongkos {vehicle} {amount}",
+            "tiket {vehicle} {amount}",
+            "tol {amount}",
+            "bayar tol {amount}",
+            "e-toll {amount}",
+        ],
+        "belanja": [
+            "beli {item} {amount}",
+            "belanja {item} {amount}",
+            "shopping {item} {amount}",
+            "beli {item} di {place} {amount}",
+            "{item} {amount}",
+            "beli oleh-oleh {amount}",
+            "beli souvenir {amount}",
+            "beli kado {amount}",
+            "beli hadiah {amount}",
+        ],
+        "tagihan": [
+            "bayar {bill} {amount}",
+            "{bill} {amount}",
+            "bayar tagihan {bill} {amount}",
+            "lunasi {bill} {amount}",
+            "transfer {bill} {amount}",
+            "bayar cicilan {amount}",
+            "bayar kredit {amount}",
+            "bayar hutang {amount}",
+        ],
+        "hiburan": [
+            "nonton {item} {amount}",
+            "nonton film {amount}",
+            "bioskop {amount}",
+            "tiket bioskop {amount}",
+            "karaoke {amount}",
+            "main {item} {amount}",
+            "beli game {amount}",
+            "langganan {item} {amount}",
+            "netflix {amount}",
+            "spotify {amount}",
+            "youtube premium {amount}",
+            "disney+ {amount}",
+            "konser {amount}",
+            "tiket konser {amount}",
+            "wisata {amount}",
+            "piknik {amount}",
+            "jalan-jalan {amount}",
+            "liburan {amount}",
+        ],
+        "kesehatan": [
+            "beli obat {amount}",
+            "obat {amount}",
+            "apotek {amount}",
+            "dokter {amount}",
+            "periksa {amount}",
+            "medical checkup {amount}",
+            "vitamin {amount}",
+            "beli vitamin {amount}",
+            "rumah sakit {amount}",
+            "klinik {amount}",
+            "tes lab {amount}",
+            "gigi {amount}",
+            "dokter gigi {amount}",
+        ],
+        "pendidikan": [
+            "bayar kursus {amount}",
+            "kursus {item} {amount}",
+            "les {item} {amount}",
+            "beli buku {amount}",
+            "buku {amount}",
+            "bayar SPP {amount}",
+            "SPP {amount}",
+            "uang kuliah {amount}",
+            "bimbel {amount}",
+            "pelatihan {amount}",
+            "seminar {amount}",
+            "workshop {amount}",
+            "kelas online {amount}",
+            "udemy {amount}",
+            "coursera {amount}",
+            "beli alat tulis {amount}",
+        ],
     }
-    
-    amounts = [10000, 15000, 20000, 25000, 30000, 50000, 75000, 100000]
-    
+
+    # Expanded items per category
+    items = {
+        "makanan": [
+            "bakso", "mie ayam", "nasi goreng", "sate", "gado-gado",
+            "soto", "rawon", "rendang", "nasi padang", "ayam geprek",
+            "ayam goreng", "bebek goreng", "ikan bakar", "seafood",
+            "pizza", "burger", "kentang goreng", "ayam kfc", "mcd",
+            "ramen", "sushi", "dimsum", "martabak", "pempek",
+            "bubur ayam", "lontong sayur", "ketoprak", "siomay",
+            "batagor", "cilok", "cireng", "gorengan", "es teh",
+            "es jeruk", "jus", "kopi", "teh", "susu", "boba",
+            "chatime", "kopi kenangan", "starbucks", "janji jiwa"
+        ],
+        "belanja": [
+            "baju", "celana", "sepatu", "tas", "jaket", "kaos",
+            "kemeja", "dress", "rok", "sandal", "topi", "jam tangan",
+            "kacamata", "dompet", "ikat pinggang", "aksesoris",
+            "kosmetik", "skincare", "parfum", "sabun", "shampoo",
+            "hp", "laptop", "charger", "earphone", "case hp",
+            "peralatan dapur", "furniture", "dekorasi"
+        ],
+        "hiburan": [
+            "film", "konser", "game", "netflix", "spotify", "disney+",
+            "playstation", "xbox", "nintendo", "steam"
+        ],
+        "pendidikan": [
+            "bahasa inggris", "matematika", "programming", "coding",
+            "musik", "gitar", "piano", "menggambar", "desain"
+        ],
+    }
+
+    # Places
+    places = [
+        "warung", "resto", "restoran", "cafe", "kafe", "mall",
+        "kantor", "kampus", "sekolah", "rumah", "kosan", "apartemen",
+        "pinggir jalan", "depan kantor", "dekat rumah", "samping kampus",
+        "indomaret", "alfamart", "supermarket", "pasar", "tokopedia",
+        "shopee", "lazada", "bukalapak", "mcd", "kfc", "starbucks"
+    ]
+
+    # Vehicles
+    vehicles = ["bus", "kereta", "pesawat", "kapal", "angkot", "mrt", "lrt", "krl", "transjakarta"]
+
+    # Bills
+    bills = [
+        "listrik", "air", "internet", "wifi", "pulsa", "paket data",
+        "gas", "pln", "pdam", "telkom", "indihome", "tv kabel",
+        "asuransi", "pajak", "iuran", "sewa", "kontrakan", "kos"
+    ]
+
+    # Amount formats - more variety
+    def format_amount(amount):
+        formats = [
+            f"Rp {amount:,}".replace(',', '.'),
+            f"Rp{amount:,}".replace(',', '.'),
+            f"Rp. {amount:,}".replace(',', '.'),
+            f"{amount:,}".replace(',', '.'),
+            f"{amount}",
+            f"{amount // 1000}k" if amount >= 1000 else f"{amount}",
+            f"{amount // 1000}rb" if amount >= 1000 else f"{amount}",
+            f"{amount // 1000} ribu" if amount >= 1000 else f"{amount}",
+            f"{amount // 1000000}jt" if amount >= 1000000 else (f"{amount // 1000}rb" if amount >= 1000 else f"{amount}"),
+        ]
+        return np.random.choice(formats)
+
+    # Informal prefixes (slang)
+    prefixes = [
+        "", "", "",  # Empty prefix most common
+        "gw ", "gue ", "gua ",  # I (informal Jakarta)
+        "aku ", "saya ",  # I (formal)
+        "abis ", "habis ", "baru ",  # just did
+        "td ", "tadi ",  # earlier
+        "lg ", "lagi ",  # currently
+        "mau ", "pengen ", "pingin ",  # want to
+        "udah ", "sudah ",  # already
+    ]
+
+    # Informal suffixes
+    suffixes = [
+        "", "", "",  # Empty suffix most common
+        " nih", " dong", " deh", " sih", " lho", " ya",
+        " tadi", " barusan", " kemarin", " td pagi", " td siang", " td malam",
+        " sama temen", " sama pacar", " sama keluarga", " sendirian",
+        " buat makan", " buat jajan", " buat bensin",
+    ]
+
+    amounts = [
+        5000, 8000, 10000, 12000, 15000, 18000, 20000, 22000, 25000,
+        28000, 30000, 35000, 40000, 45000, 50000, 55000, 60000, 65000,
+        70000, 75000, 80000, 85000, 90000, 95000, 100000, 120000,
+        150000, 175000, 200000, 250000, 300000, 350000, 400000, 500000,
+        750000, 1000000, 1500000, 2000000, 2500000, 3000000, 5000000
+    ]
+
     data = []
-    
+
     for _ in range(num_samples):
-        template, category = templates[np.random.randint(len(templates))]
-        
+        # Pick category and template
+        category = np.random.choice(list(templates.keys()))
+        template = np.random.choice(templates[category])
+
+        # Get item if needed
         if "{item}" in template:
             category_items = items.get(category, ["sesuatu"])
             item = np.random.choice(category_items)
         else:
             item = ""
-        
-        amount = np.random.choice(amounts)
-        amount_text = f"Rp {amount:,}".replace(',', '.')
-        
-        text = template.format(item=item, amount=amount_text)
-        
+
+        # Get place if needed
+        place = np.random.choice(places) if "{place}" in template else ""
+
+        # Get vehicle if needed
+        vehicle = np.random.choice(vehicles) if "{vehicle}" in template else ""
+
+        # Get bill if needed
+        bill = np.random.choice(bills) if "{bill}" in template else ""
+
+        # Get amount
+        amount = int(np.random.choice(amounts))
+        amount_text = format_amount(amount)
+
+        # Build text
+        text = template.format(
+            item=item,
+            amount=amount_text,
+            place=place,
+            vehicle=vehicle,
+            bill=bill
+        )
+
+        # Add prefix and suffix randomly
+        if np.random.random() < 0.4:
+            text = np.random.choice(prefixes) + text
+        if np.random.random() < 0.3:
+            text = text + np.random.choice(suffixes)
+
+        # Clean up extra spaces
+        text = ' '.join(text.split())
+
         data.append({
             "text": text,
             "category": category,
             "amount": amount,
             "ner_labels": [0] * 128  # Simplified for demo
         })
-    
+
     return data
 
 
@@ -180,9 +413,26 @@ def train_text_extractor(
             num_training_steps=total_steps
         )
         
-        # Loss functions
+        # Compute class weights for balanced training
+        with open(train_data_path, 'r', encoding='utf-8') as f:
+            train_data_raw = json.load(f)
+        category_counts = {}
+        for item in train_data_raw:
+            cat = item['category']
+            category_counts[cat] = category_counts.get(cat, 0) + 1
+        total_samples = len(train_data_raw)
+        num_classes = len(CATEGORIES)
+        class_weights = []
+        for cat in CATEGORIES:
+            count = category_counts.get(cat, 1)
+            weight = total_samples / (num_classes * count)
+            class_weights.append(weight)
+        class_weights = torch.tensor(class_weights, dtype=torch.float).to(device)
+        print(f"Class weights: {dict(zip(CATEGORIES, class_weights.tolist()))}")
+
+        # Loss functions with class weights
         ner_criterion = nn.CrossEntropyLoss(ignore_index=0)
-        category_criterion = nn.CrossEntropyLoss()
+        category_criterion = nn.CrossEntropyLoss(weight=class_weights)
         amount_criterion = nn.MSELoss()
         
         # Training loop
@@ -320,31 +570,32 @@ def train_text_extractor(
 
 
 if __name__ == "__main__":
-    # Create synthetic data for demonstration
+    # Create synthetic data with diverse patterns
     print("Creating synthetic training data...")
-    train_data = create_synthetic_data(num_samples=1000)
-    val_data = create_synthetic_data(num_samples=200)
-    
+    train_data = create_synthetic_data(num_samples=10000)
+    val_data = create_synthetic_data(num_samples=2000)
+
     # Save data
     train_path = MODEL_DIR / "train_data.json"
     val_path = MODEL_DIR / "val_data.json"
-    
+
     with open(train_path, 'w', encoding='utf-8') as f:
         json.dump(train_data, f, ensure_ascii=False, indent=2)
-    
+
     with open(val_path, 'w', encoding='utf-8') as f:
         json.dump(val_data, f, ensure_ascii=False, indent=2)
-    
+
     print(f"Created {len(train_data)} training samples")
     print(f"Created {len(val_data)} validation samples")
-    
-    # Train model
+
+    # Train model with better parameters
     print("\nStarting training...")
     model = train_text_extractor(
         train_data_path=str(train_path),
         val_data_path=str(val_path),
-        epochs=5,  # Reduced for demo
-        batch_size=16
+        epochs=10,
+        batch_size=32,
+        learning_rate=2e-5
     )
-    
+
     print("\nTraining script completed!")
