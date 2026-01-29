@@ -360,14 +360,6 @@ Through this project, I showcase hands-on experience with:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
-
-## 🙏 Acknowledgments
-
-- **Apple Developer Academy** @ UC Surabaya for the inspiration
-- **IndoNLU** team for the IndoBERT model
-- **HuggingFace** for the Transformers library
-- **OpenAI** for the Whisper model
 
 ---
 
